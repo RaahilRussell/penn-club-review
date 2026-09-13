@@ -1,24 +1,47 @@
-import os
+import json
+from pathlib import Path
 
-from app import app, db, DB_FILE
+from app import app
+from extensions import db
+from models import Club, User, tag_objects
 
-from models import *
 
 def create_user():
-    print("TODO: Create a user called josh")
+    if User.query.filter_by(username="josh").first() is None:
+        db.session.add(User(username="josh"))
+        db.session.commit()
 
-def load_data():
-    print("TODO: Load in clubs.json to the database.")
+
+def load_json(path=Path(__file__).with_name("clubs.json")):
+    with open(path, encoding="utf-8") as file:
+        return json.load(file)
 
 
-# No need to modify the below code.
+def load_data(path=Path(__file__).with_name("clubs.json")):
+    for club_data in load_json(path):
+        club = Club(
+            code=club_data["code"],
+            name=club_data["name"],
+            description=club_data["description"],
+            tags=tag_objects(club_data["tags"]),
+        )
+        db.session.add(club)
+    db.session.commit()
+
+
 if __name__ == "__main__":
-    # Delete any existing database before bootstrapping a new one.
-    LOCAL_DB_FILE = "instance/" + DB_FILE
-    if os.path.exists(LOCAL_DB_FILE):
-        os.remove(LOCAL_DB_FILE)
-
     with app.app_context():
+        if db.engine.dialect.name != "sqlite" or db.engine.url.database in (
+            None,
+            "",
+            ":memory:",
+        ):
+            raise ValueError("Bootstrap requires a file-backed SQLite database.")
+        # Dispose connections before replacing the configured SQLite file.
+        database = Path(db.engine.url.database)
+        db.session.remove()
+        db.engine.dispose()
+        database.unlink(missing_ok=True)
         db.create_all()
         create_user()
         load_data()

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Penn Club Review</title>
+    <style>
+      :root {
+        --canvas: #f5f6fa;
+        --surface: #ffffff;
+        --navy: #20284a;
+        --body: #5d6478;
+        --muted: #8b91a3;
+        --line: #e6e8ef;
+        --lavender: #eeedff;
+        --violet: #5756d6;
+        --violet-dark: #4847b7;
+        --shadow: 0 3px 12px rgba(36, 42, 76, .07);
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; color: var(--navy); background: var(--canvas); font: 14px/1.5 Arial, Helvetica, sans-serif; }
+      button, input, textarea { font: inherit; }
+      button { cursor: pointer; }
+      button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid rgba(87, 86, 214, .28); outline-offset: 2px; }
+      .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+      .topbar { height: 62px; border-bottom: 1px solid var(--line); background: var(--surface); }
+      .topbar-inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+      .wordmark { color: var(--navy); font-size: 18px; font-weight: 700; letter-spacing: -.04em; }
+      .topnav { display: flex; align-items: center; gap: 24px; color: var(--body); font-size: 12px; }
+      .topnav a { color: inherit; text-decoration: none; }
+      .topnav a:hover { color: var(--violet); }
+      .user-pill { padding-left: 18px; border-left: 1px solid var(--line); color: var(--body); font-size: 12px; }
+
+      main { padding: 52px 0 80px; }
+      .intro { max-width: 700px; margin: 0 auto 30px; text-align: center; }
+      .kicker { margin: 0 0 8px; color: var(--violet); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+      h1 { margin: 0; color: var(--navy); font-size: clamp(30px, 4vw, 42px); letter-spacing: -.05em; line-height: 1.08; }
+      .intro p { margin: 12px auto 0; color: var(--body); font-size: 15px; }
+      .search-row { display: flex; gap: 10px; max-width: 720px; margin: 0 auto 38px; }
+      .search-wrap { position: relative; flex: 1; }
+      .search-icon { position: absolute; top: 11px; left: 14px; color: var(--muted); font-size: 17px; }
+      .search { width: 100%; height: 42px; padding: 0 16px 0 40px; border: 1px solid var(--line); border-radius: 7px; color: var(--navy); background: var(--surface); box-shadow: var(--shadow); }
+      .search::placeholder, input::placeholder, textarea::placeholder { color: #a2a7b6; }
+      .button { min-height: 40px; padding: 0 16px; border: 1px solid var(--violet); border-radius: 7px; color: #fff; background: var(--violet); font-size: 12px; font-weight: 700; }
+      .button:hover { background: var(--violet-dark); }
+      .button.secondary { border-color: var(--line); color: var(--body); background: var(--surface); }
+      .button.secondary:hover { border-color: #c9cbe0; color: var(--navy); background: #fafaff; }
+
+      .content-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; align-items: start; }
+      .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+      h2 { margin: 0; font-size: 20px; letter-spacing: -.035em; }
+      .count { color: var(--muted); font-size: 12px; }
+      .clubs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .club { min-height: 214px; display: flex; flex-direction: column; padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow); }
+      .club-code { margin-bottom: 5px; color: var(--violet); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+      .club h3 { margin: 0 0 8px; overflow-wrap: anywhere; font-size: 17px; letter-spacing: -.025em; line-height: 1.2; }
+      .club p { flex: 1; margin: 0 0 14px; overflow-wrap: anywhere; color: var(--body); font-size: 13px; line-height: 1.45; }
+      .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 15px; }
+      .tag { max-width: 100%; overflow-wrap: anywhere; padding: 3px 8px; border-radius: 10px; color: #5955bb; background: var(--lavender); font-size: 10px; font-weight: 700; }
+      .club-actions { display: flex; gap: 7px; }
+      .club-actions .button { flex: 1; min-height: 32px; padding: 0 8px; font-size: 11px; }
+      .club-actions .button.is-favorite { color: var(--violet); border-color: #c9c8fa; background: var(--lavender); }
+
+      .sidebar { display: grid; gap: 16px; }
+      .panel { padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow); }
+      .panel h2 { font-size: 17px; }
+      .panel p { margin: 8px 0 16px; color: var(--body); font-size: 12px; }
+      form { display: grid; gap: 9px; }
+      input, textarea { width: 100%; padding: 10px 11px; border: 1px solid var(--line); border-radius: 6px; color: var(--navy); background: #fbfbfd; }
+      textarea { min-height: 76px; resize: vertical; }
+      .form-note { margin: -2px 0 3px; color: var(--muted); font-size: 10px; }
+      .popular { display: flex; flex-wrap: wrap; gap: 6px; }
+      .popular .tag { font-size: 10px; }
+      .status { min-height: 18px; color: var(--body); font-size: 12px; }
+      .status.error { color: #b54256; }
+      .loading, .empty { grid-column: 1 / -1; padding: 40px 16px; border: 1px dashed #d8dbe6; border-radius: 8px; color: var(--muted); text-align: center; }
+
+      @media (max-width: 820px) {
+        .content-grid { grid-template-columns: 1fr; }
+        .sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .status { grid-column: 1 / -1; }
+      }
+      @media (max-width: 560px) {
+        .shell { width: min(100% - 24px, 480px); }
+        .topbar { height: 56px; }
+        .topnav a { display: none; }
+        .user-pill { padding-left: 0; border-left: 0; }
+        main { padding-top: 34px; }
+        .intro { text-align: left; }
+        .intro p { margin-left: 0; }
+        .search-row { flex-direction: column; margin-bottom: 28px; }
+        .search-row .button { width: 100%; }
+        .clubs, .sidebar { grid-template-columns: 1fr; }
+        .club { min-height: 200px; }
+      }
+      @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="shell topbar-inner">
+        <div class="wordmark">Penn Club Review</div>
+        <nav class="topnav" aria-label="Primary navigation">
+          <a href="#clubs-heading">Discover</a>
+          <a href="#add-club">Add a club</a>
+          <span class="user-pill">josh</span>
+        </nav>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="intro">
+        <p class="kicker">Student organizations</p>
+        <h1>Find a club that feels like yours.</h1>
+        <p>Search the Penn Club Review directory and discover your next community.</p>
+      </section>
+
+      <div class="search-row">
+        <div class="search-wrap"><span class="search-icon" aria-hidden="true">⌕</span><input id="search" class="search" type="search" placeholder="Search clubs by name" aria-label="Search clubs by name"></div>
+        <button id="clear-search" class="button secondary" type="button">Clear search</button>
+      </div>
+
+      <div class="content-grid">
+        <section aria-labelledby="clubs-heading">
+          <div class="section-head"><h2 id="clubs-heading">Browse clubs</h2><span id="club-count" class="count"></span></div>
+          <div id="clubs" class="clubs"><div class="loading">Loading clubs…</div></div>
+        </section>
+
+        <aside class="sidebar">
+          <section id="add-club" class="panel">
+            <h2>Add a club</h2>
+            <p>Know a group that belongs in the directory?</p>
+            <form id="create-form">
+              <input name="code" placeholder="Short code" aria-label="Club short code" required>
+              <input name="name" placeholder="Club name" aria-label="Club name" required>
+              <textarea name="description" placeholder="Short description" aria-label="Club description" required></textarea>
+              <input name="tags" placeholder="Tags, separated by commas" aria-label="Club tags">
+              <span class="form-note">Example: Technology, Undergraduate</span>
+              <button class="button" type="submit">Add club</button>
+            </form>
+          </section>
+          <section class="panel">
+            <h2>Popular tags</h2>
+            <p>Browse the categories shared across clubs.</p>
+            <div id="tags" class="popular"><span class="count">Loading tags…</span></div>
+          </section>
+          <div id="status" class="status" role="status" aria-live="polite"></div>
+        </aside>
+      </div>
+    </main>
+
+    <script>
+      const clubsEl = document.querySelector('#clubs');
+      const countEl = document.querySelector('#club-count');
+      const searchEl = document.querySelector('#search');
+      const statusEl = document.querySelector('#status');
+      let favorites = new Set();
+      let searchVersion = 0;
+
+      function showStatus(message, error = false) {
+        statusEl.textContent = message;
+        statusEl.className = error ? 'status error' : 'status';
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, character => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[character]));
+      }
+
+      async function api(path, options = {}) {
+        let response;
+        try {
+          response = await fetch(path, {headers: {'Content-Type': 'application/json'}, ...options});
+        } catch {
+          throw new Error('Cannot reach the server. Check your connection and retry.');
+        }
+        let data;
+        try {
+          data = await response.json();
+        } catch {
+          throw new Error('The server returned an unexpected response. Please retry.');
+        }
+        if (!response.ok) {
+          const message = typeof data?.error === 'string' && data.error.trim();
+          throw new Error(message || `Request failed (${response.status}). Please retry.`);
+        }
+        return data;
+      }
+
+      function clubCard(club) {
+        const card = document.createElement('article');
+        card.className = 'club';
+        const code = escapeHtml(club.code);
+        const isFavorite = favorites.has(club.code);
+        card.innerHTML = `<div class="club-code">${code}</div><h3>${escapeHtml(club.name)}</h3><p>${escapeHtml(club.description)}</p><div class="tags">${club.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}</div><div class="club-actions"><button class="button ${isFavorite ? 'is-favorite' : ''}" data-favorite="${code}" ${isFavorite ? 'disabled' : ''}>${isFavorite ? 'Favorited' : 'Favorite'}</button><button class="button secondary" data-edit="${code}">Edit description</button></div>`;
+        return card;
+      }
+
+      async function loadClubs() {
+        const version = ++searchVersion;
+        clubsEl.innerHTML = '<div class="loading">Loading clubs…</div>';
+        clubsEl.setAttribute('aria-busy', 'true');
+        countEl.textContent = '';
+        const query = searchEl.value.trim();
+        try {
+          await favoritesReady;
+          const clubs = await api('/api/clubs' + (query ? `?search=${encodeURIComponent(query)}` : ''));
+          if (version !== searchVersion) return;
+          clubsEl.replaceChildren(...(clubs.length ? clubs.map(clubCard) : [Object.assign(document.createElement('p'), {className: 'empty', textContent: 'No clubs match that search. Try a different name.'})]));
+          countEl.textContent = `${clubs.length} ${clubs.length === 1 ? 'club' : 'clubs'}`;
+        } catch (error) {
+          if (version !== searchVersion) return;
+          clubsEl.replaceChildren(Object.assign(document.createElement('p'), {className: 'empty', textContent: error.message + ' Use Clear search to retry.'}));
+        } finally {
+          if (version === searchVersion) clubsEl.setAttribute('aria-busy', 'false');
+        }
+      }
+
+      async function loadUser() {
+        const user = await api('/api/users/josh');
+        favorites = new Set(user.favorites.map(club => club.code));
+      }
+
+      async function loadTags() {
+        const tags = await api('/api/tags');
+        tags.sort((a, b) => b.club_count - a.club_count || a.name.localeCompare(b.name));
+        document.querySelector('#tags').replaceChildren(...tags.slice(0, 7).map(tag => Object.assign(document.createElement('span'), {className: 'tag', textContent: `${tag.name} · ${tag.club_count}`})));
+      }
+
+      document.querySelector('#create-form').addEventListener('submit', async event => {
+        event.preventDefault();
+        const form = new FormData(event.target);
+        try {
+          await api('/api/clubs', {method: 'POST', body: JSON.stringify({code: form.get('code'), name: form.get('name'), description: form.get('description'), tags: form.get('tags').split(',').map(tag => tag.trim()).filter(Boolean)})});
+          event.target.reset();
+          showStatus('Club added to the directory.');
+          await Promise.all([loadClubs(), loadTags()]);
+        } catch (error) { showStatus(error.message, true); }
+      });
+
+      clubsEl.addEventListener('click', async event => {
+        const favorite = event.target.dataset.favorite;
+        const edit = event.target.dataset.edit;
+        try {
+          if (favorite) {
+            const user = await api(`/api/clubs/${encodeURIComponent(favorite)}/favorites`, {method: 'POST', body: JSON.stringify({username: 'josh'})});
+            // Favorites can only be added; older responses must not erase later saves.
+            user.favorites.forEach(club => favorites.add(club.code));
+            showStatus('Added to Josh’s favorites.');
+            await loadClubs();
+          }
+          if (edit) {
+            const description = window.prompt('Edit description:', event.target.closest('article').querySelector('p').textContent);
+            if (description === null) return;
+            await api(`/api/clubs/${encodeURIComponent(edit)}`, {method: 'PATCH', body: JSON.stringify({description})});
+            showStatus('Club updated.');
+            await loadClubs();
+          }
+        } catch (error) { showStatus(error.message, true); }
+      });
+
+      let searchTimer;
+      searchEl.addEventListener('input', () => { ++searchVersion; clearTimeout(searchTimer); searchTimer = setTimeout(loadClubs, 180); });
+      document.querySelector('#clear-search').addEventListener('click', () => { clearTimeout(searchTimer); searchEl.value = ''; loadClubs(); searchEl.focus(); });
+      const favoritesReady = loadUser().catch(error => {
+        showStatus('Favorites could not be loaded: ' + error.message, true);
+      });
+      loadClubs();
+      loadTags().catch(error => {
+        document.querySelector('#tags').textContent = error.message;
+      });
+    </script>
+  </body>
+</html>
